@@ -1,5 +1,3 @@
-import re
-
 from thefuzz import fuzz
 from prepare_data import *
 
@@ -8,16 +6,16 @@ def comparison_price(ks_price, db_price, index=False):
     """Make comparison between two price"""
     if index:
         db_price *= index
-        result_percent = abs((ks_price-db_price)/db_price*100)
+        result_percent = abs((ks_price - db_price) / db_price * 100)
         result_price = abs(ks_price - db_price)
     else:
-        result_percent = abs((ks_price-db_price)/db_price*100)
+        result_percent = abs((ks_price - db_price) / db_price * 100)
         result_price = abs(ks_price - db_price)
 
-    return (True if result_percent > 15 else False, result_price, round(result_percent))
+    return True if result_percent > 15 else False, result_price, round(result_percent)
 
 
-def make_comparison(price_ks, df_price):
+def make_comparison(price_ks, df_price, fssc_price=False):
     """Make comparison"""
 
     df = pd.DataFrame(columns=[
@@ -33,17 +31,17 @@ def make_comparison(price_ks, df_price):
 
         flag = False
 
+        # TODO better use process
         for name_price_db in df_price.iloc:
 
             result = fuzz.ratio(name_item_ks, name_price_db[0])
 
             if result >= 95:
-
-                #print(name_item_ks, '////', name_price_db[0], '===>', result)
+                # print(name_item_ks, '////', name_price_db[0], '===>', result)
 
                 result_comparison = comparison_price(price_index_ks[0], name_price_db[1])
 
-                #print(result_comparison, name_price_db[1])
+                # print(result_comparison, name_price_db[1])
 
                 to_df = {
                     'Наименование': name_item_ks,
@@ -78,7 +76,6 @@ def make_comparison(price_ks, df_price):
 
 
 if __name__ == '__main__':
-
     # name of file
     path_of_file = r'КС/КС2-3.xlsx'
     # number of columns in xlsx file that will use
@@ -91,7 +88,3 @@ if __name__ == '__main__':
     print(df_price_test)
 
     make_comparison(price_ks, df_price_test)
-
-
-
-
